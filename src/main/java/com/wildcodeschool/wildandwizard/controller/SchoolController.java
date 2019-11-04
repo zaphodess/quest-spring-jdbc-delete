@@ -16,7 +16,7 @@ public class SchoolController {
 
         repository.deleteById(id);
 
-        return "redirect:/wizards";
+        return "redirect:/schools";
     }
 
     @GetMapping("/schools")
