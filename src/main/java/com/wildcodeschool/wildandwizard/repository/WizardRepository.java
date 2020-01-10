@@ -1,6 +1,7 @@
 package com.wildcodeschool.wildandwizard.repository;
 
 import com.wildcodeschool.wildandwizard.entity.Wizard;
+import com.wildcodeschool.wildandwizard.util.JdbcUtils;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,11 +14,14 @@ public class WizardRepository {
     private final static String DB_PASSWORD = "Horcrux4life!";
 
     public void deleteById(Long id) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
         try {
-            Connection connection = DriverManager.getConnection(
+            connection = DriverManager.getConnection(
                     DB_URL, DB_USER, DB_PASSWORD
             );
-            PreparedStatement statement = connection.prepareStatement(
+            statement = connection.prepareStatement(
                     "DELETE FROM wizard WHERE id=?"
             );
             statement.setLong(1, id);
@@ -27,19 +31,26 @@ public class WizardRepository {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            JdbcUtils.closeResultSet(resultSet);
+            JdbcUtils.closeStatement(statement);
+            JdbcUtils.closeConnection(connection);
         }
     }
 
     public List<Wizard> findAll() {
 
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
         try {
-            Connection connection = DriverManager.getConnection(
+            connection = DriverManager.getConnection(
                     DB_URL, DB_USER, DB_PASSWORD
             );
-            PreparedStatement statement = connection.prepareStatement(
+            statement = connection.prepareStatement(
                     "SELECT * FROM wizard;"
             );
-            ResultSet resultSet = statement.executeQuery();
+            resultSet = statement.executeQuery();
 
             List<Wizard> wizards = new ArrayList<>();
 
@@ -56,6 +67,10 @@ public class WizardRepository {
             return wizards;
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            JdbcUtils.closeResultSet(resultSet);
+            JdbcUtils.closeStatement(statement);
+            JdbcUtils.closeConnection(connection);
         }
         return null;
     }

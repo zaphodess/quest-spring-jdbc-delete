@@ -1,10 +1,15 @@
 package com.wildcodeschool.wildandwizard.repository;
 
-import com.wildcodeschool.wildandwizard.entity.School;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.wildcodeschool.wildandwizard.entity.School;
+import com.wildcodeschool.wildandwizard.util.JdbcUtils;
 
 public class SchoolRepository {
 
@@ -18,14 +23,17 @@ public class SchoolRepository {
 
     public List<School> findAll() {
 
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
         try {
-            Connection connection = DriverManager.getConnection(
+            connection = DriverManager.getConnection(
                     DB_URL, DB_USER, DB_PASSWORD
             );
-            PreparedStatement statement = connection.prepareStatement(
+            statement = connection.prepareStatement(
                     "SELECT * FROM school;"
             );
-            ResultSet resultSet = statement.executeQuery();
+            resultSet = statement.executeQuery();
 
             List<School> schools = new ArrayList<>();
 
@@ -39,6 +47,10 @@ public class SchoolRepository {
             return schools;
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            JdbcUtils.closeResultSet(resultSet);
+            JdbcUtils.closeStatement(statement);
+            JdbcUtils.closeConnection(connection);
         }
         return null;
     }
